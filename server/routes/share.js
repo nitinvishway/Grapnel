@@ -14,13 +14,16 @@ const router = express.Router();
 const tokenStore = new Map();
 
 /** Remove expired tokens on a rolling basis */
-function purgeExpired() {
+export function purgeExpired() {
   const now = Date.now();
   for (const [token, data] of tokenStore.entries()) {
     if (data.expiresAt <= now) tokenStore.delete(token);
   }
 }
-setInterval(purgeExpired, 60 * 1000); // every minute
+const purgeTimer = setInterval(purgeExpired, 60 * 1000); // every minute
+if (purgeTimer.unref) purgeTimer.unref();
+
+export { tokenStore };
 
 /**
  * POST /api/share/create

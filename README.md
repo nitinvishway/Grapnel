@@ -86,6 +86,8 @@ On your first launch, Grapnel will present an initial configuration wall:
 | `npm run dev` | Concurrently runs both the backend server (port 3001) and Vite frontend (port 3000) |
 | `npm run server` | Runs the Express backend in watch mode |
 | `npm run client` | Launches the Vite dev server bound to `0.0.0.0` |
+| `npm test` | Runs the backend Vitest test suite (Auth, 403 isolation, streaming range requests, share links) |
+| `npm run test:watch` | Runs Vitest in interactive watch mode |
 | `npm run build` | Compiles the frontend for production deployment |
 | `npm run preview` | Previews the compiled production build |
 
@@ -94,3 +96,4 @@ On your first launch, Grapnel will present an initial configuration wall:
 ##  License
 
 This project is open-source and available under the [MIT License](LICENSE).
+

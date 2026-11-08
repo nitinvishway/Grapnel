@@ -6,12 +6,12 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DATA_DIR = path.join(__dirname, '../data');
-const AUTH_FILE = path.join(DATA_DIR, 'auth.json');
-
-// Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+function getAuthFilePath() {
+  if (process.env.GRAPNEL_AUTH_FILE) {
+    return process.env.GRAPNEL_AUTH_FILE;
+  }
+  const defaultDir = path.join(__dirname, '../data');
+  return path.join(defaultDir, 'auth.json');
 }
 
 // In-memory active sessions: token -> { role: 'master' | 'standard', createdAt: number }
@@ -35,12 +35,13 @@ function verifyHash(password, storedHash, storedSalt) {
 
 // Load auth configuration from disk
 function loadAuthConfig() {
-  if (!fs.existsSync(AUTH_FILE)) return null;
+  const authFile = getAuthFilePath();
+  if (!fs.existsSync(authFile)) return null;
   try {
-    const raw = fs.readFileSync(AUTH_FILE, 'utf8');
+    const raw = fs.readFileSync(authFile, 'utf8');
     return JSON.parse(raw);
   } catch (err) {
-    console.error('Failed to parse auth.json:', err);
+    console.error('Failed to parse auth config:', err);
     return null;
   }
 }
@@ -66,7 +67,13 @@ export const authStore = {
       updatedAt: new Date().toISOString(),
     };
 
-    fs.writeFileSync(AUTH_FILE, JSON.stringify(config, null, 2), 'utf8');
+    const authFile = getAuthFilePath();
+    const dataDir = path.dirname(authFile);
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+
+    fs.writeFileSync(authFile, JSON.stringify(config, null, 2), 'utf8');
     return true;
   },
 
@@ -106,5 +113,9 @@ export const authStore = {
     if (token) {
       activeSessions.delete(token);
     }
+  },
+
+  clearSessions() {
+    activeSessions.clear();
   },
 };
