@@ -152,3 +152,4 @@ describe('Backend Auth Engine (/api/auth)', () => {
     expect(statusRes.body.authenticated).toBe(false);
   });
 });
+

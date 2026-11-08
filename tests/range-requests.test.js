@@ -104,3 +104,4 @@ describe('Range Requests & Media Streaming (/api/files/stream)', () => {
     expect(res.body.error).toMatch(/not found/i);
   });
 });
+
